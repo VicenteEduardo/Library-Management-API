@@ -32,8 +32,18 @@ class ListBooks:
     def __init__(self, books: BookRepository):
         self.books = books
 
-    def execute(self, skip: int = 0, limit: int = 100) -> List[Book]:
-        return self.books.list(skip=skip, limit=limit)
+    def execute(self, skip: int = 0, limit: int = 100,
+                q: Optional[str] = None,
+                author: Optional[str] = None) -> List[Book]:
+        books = self.books.list(skip=skip, limit=limit)
+        if q:
+            needle = q.strip().lower()
+            books = [b for b in books
+                     if needle in b.title.lower() or needle in b.isbn.lower()]
+        if author:
+            needle = author.strip().lower()
+            books = [b for b in books if needle in b.author.lower()]
+        return books
 
 
 class GetBook:

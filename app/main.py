@@ -9,8 +9,13 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Library Management API",
-    description="API para gerir livros, membros e empréstimos. DDD + SOLID.",
+    description=(
+        "API para gerir uma biblioteca: livros, membros, empréstimos e devoluções.\n\n"
+        "Começa por `POST /books` e `POST /members`, depois empresta com "
+        "`POST /loans/borrow`. A documentação interativa está em `/docs`."
+    ),
     version="1.0.0",
+    license_info={"name": "MIT"},
 )
 
 app.include_router(books.router)
@@ -20,4 +25,10 @@ app.include_router(loans.router)
 
 @app.get("/", tags=["health"], summary="Health check")
 def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "docs": "/docs",
+        "books": "/books",
+        "members": "/members",
+        "loans": "/loans",
+    }

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
 
 from app.application.use_cases import (
     CreateBook,
@@ -40,8 +41,12 @@ def create_book(payload: BookCreate,
 
 @router.get("", response_model=list[BookResponse], summary="Listar livros")
 def list_books(skip: int = 0, limit: int = 100,
+               q: Optional[str] = None,
+               author: Optional[str] = None,
                repo: SQLAlchemyBookRepository = Depends(get_book_repo)):
-    return [_to_response(b) for b in ListBooks(repo).execute(skip, limit)]
+    """Pesquisa com `q` (título ou ISBN) e filtra por `author`. Ex: `/books?q=machado`."""
+    return [_to_response(b)
+            for b in ListBooks(repo).execute(skip, limit, q=q, author=author)]
 
 
 @router.get("/{book_id}", response_model=BookResponse, summary="Obter livro")
